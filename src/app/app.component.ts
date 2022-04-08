@@ -6,6 +6,7 @@ import { combineLatest, map, reduce } from 'rxjs';
 import { BRL, Currency } from '@dinero.js/currencies';
 
 import { toSafeNumber } from './utils/rxjs-safe.utils';
+import { CalculateService } from './calculate.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,7 @@ import { toSafeNumber } from './utils/rxjs-safe.utils';
 export class AppComponent implements OnInit {
   form: FormGroup;
 
-  constructor(public fb: FormBuilder) {}
+  constructor(public fb: FormBuilder, public calculateService: CalculateService) {}
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -50,7 +51,7 @@ export class AppComponent implements OnInit {
       )
       .subscribe(console.log);
 
-    this.calculate2(1000, 10, 3);
+    this.calculateService.calculate2(1000, 10, 3);
 
     // 100 + 85 + 68,5 + (250 + ant)*10
 
@@ -86,34 +87,5 @@ export class AppComponent implements OnInit {
     //     accInterest
     //   );
     // }
-  }
-
-  private calculate2(
-    investedValue: number,
-    monthlyRate: number,
-    totalParcels: number
-  ) {
-    const parcelValue = investedValue / totalParcels;
-    let currentParcel = 1;
-    let accInterest = 0;
-    while (currentParcel <= totalParcels) {
-      const remainingValueFromInvestment =
-        investedValue - (currentParcel - 1) * parcelValue; // 750
-
-      const remainingValuePlusPreviousMonthInterest =
-        remainingValueFromInvestment + accInterest; // 750 + 100
-
-      const interestOnThisMonth =
-        (remainingValuePlusPreviousMonthInterest * monthlyRate) / 100; // 85;
-
-      accInterest += interestOnThisMonth;
-      currentParcel++;
-      console.log(
-        remainingValueFromInvestment,
-        remainingValuePlusPreviousMonthInterest,
-        interestOnThisMonth,
-        accInterest
-      );
-    }
   }
 }
